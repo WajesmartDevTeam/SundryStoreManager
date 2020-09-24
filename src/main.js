@@ -23,24 +23,24 @@ import VueToast from 'vue-toast-notification';
 import 'vue-toast-notification/dist/index.css';
 
 Vue.use(VueToast, {
-  // One of options
-  position: 'top-right',
-  duration: "3000"
+    // One of options
+    position: 'top-right',
+    duration: 5000
 })
 
 
 import {
-  MdButton,
-  MdIcon,
-  MdContent,
-  MdTabs,
-  MdTable,
-  MdCard,
-  MdField,
-  MdRipple,
-  MdToolbar,
-  MdMenu,
-  MdList
+    MdButton,
+    MdIcon,
+    MdContent,
+    MdTabs,
+    MdTable,
+    MdCard,
+    MdField,
+    MdRipple,
+    MdToolbar,
+    MdMenu,
+    MdList
 } from "vue-material/dist/components";
 import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
@@ -66,7 +66,7 @@ Vue.prototype.$swal = swal;
 
 Vue.config.productionTip = false;
 new Vue({
-  router,
-  store,
-  render: h => h(App)
+    router,
+    store,
+    render: h => h(App)
 }).$mount("#app");

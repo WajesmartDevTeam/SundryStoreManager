@@ -6,12 +6,11 @@
         <img
           src="@/assets/img/logo.png"
           alt=""
-        >
-        <br>
+        />
+        <br />
         <h5>Stores Location</h5>
       </div>
       <div class="content">
-
         <div class="card">
           <div class="card-content row">
             <md-button
@@ -26,21 +25,21 @@
             <ul class="col-9 row ml-2 outlets">
               <li
                 id="mks"
-                class="btn btn-warning col-3"
+                class="btn btn-warning col-3 store-tab "
                 @click="getOutlet('MKS')"
               >
                 Market Square
               </li>
               <li
                 id="kj"
-                class="btn btn-info col-3"
+                class="btn btn-info col-3 store-tab"
                 @click="getOutlet('KJ')"
               >
                 Kilimanjaro
               </li>
               <li
                 id="pj"
-                class="btn btn-danger col-3"
+                class="btn btn-danger col-3 store-tab"
                 @click="getOutlet('PJ')"
               >
                 Pizza Jungle
@@ -49,7 +48,6 @@
           </div>
         </div>
         <div style="margin-top: 20px;">
-
           <div class="card">
             <div class="table-responsive">
               <input
@@ -64,15 +62,17 @@
                 :filter-by="table_filter"
                 name="table_table"
               >
-
                 <template scope="{ row }">
                   <tr>
-                    <td>{{ row.id }}</td>
+                    <td>{{ stores.indexOf(row) + 1 }}</td>
                     <td>{{ row.store_name }}</td>
                     <td>{{ row.address }}</td>
                     <td>{{ row.location }}</td>
                     <td>{{ row.email }}</td>
-                    <td> <button
+                    <td>{{ row.manager_name }}</td>
+                    <td>{{ row.manager_email }}</td>
+                    <td>
+                      <button
                         class="btn btn-small btn-warning"
                         data-toggle="modal"
                         data-target="#editStoreModal"
@@ -86,9 +86,9 @@
                         @click="deleteStore(row.id)"
                       >
                         <md-icon class="text-white action">delete_forever</md-icon>
-                      </button></td>
+                      </button>
+                    </td>
                   </tr>
-
                 </template>
               </datatable>
               <div
@@ -149,7 +149,6 @@ create store -->
           <div class="modal-body">
             <form @submit.prevent="createStore">
               <md-field>
-
                 <select
                   class="md-input"
                   v-model="new_store.store_name"
@@ -188,10 +187,25 @@ create store -->
               </md-field>
 
               <md-field>
-                <label for="email">Email</label>
+                <label for="email">Store Email</label>
                 <md-input
                   name="email"
+                  type="email"
                   v-model="new_store.email"
+                />
+              </md-field>
+              <md-field>
+                <label for="manager_name">Manager Name</label>
+                <md-input
+                  name="manager_name"
+                  v-model="new_store.manager_name"
+                />
+              </md-field>
+              <md-field>
+                <label for="manager_email">Manager Email</label>
+                <md-input
+                  name="manager_email"
+                  v-model="new_store.manager_email"
                 />
               </md-field>
 
@@ -241,14 +255,12 @@ create store -->
           <div class="modal-body">
             <form @submit.prevent="editStore(edit_store.id)">
               <md-field>
-
                 <select
                   class="md-input"
                   v-model="edit_store.store_name"
                   required="required"
                   value="edit_store.store_name"
                 >
-
                   <option value="MARKETSQUARE">Marketsquare</option>
                   <option value="KILIMANJARO">Kilimanjaro</option>
                   <option value="PIZZA JUNGLE">Pizza Jungle</option>
@@ -296,7 +308,20 @@ create store -->
                   value="edit_store.email"
                 />
               </md-field>
-
+              <md-field>
+                <label for="manager_name">Manager Name</label>
+                <md-input
+                  name="manager_name"
+                  v-model="edit_store.manager_name"
+                />
+              </md-field>
+              <md-field>
+                <label for="manager_email">Manager Email</label>
+                <md-input
+                  name="manager_email"
+                  v-model="edit_store.manager_email"
+                />
+              </md-field>
               <button class="md-button md-raised md-warning btn btn-warning">
                 <div class="md-ripple">
                   <div class="md-button-content ">
@@ -332,10 +357,9 @@ export default {
         filterable: true
       },
       { label: "email", field: "email", sortable: true, filterable: true },
-
+      { label: "Manager Name", field: "manager_name", sortable: true, filterable: true },
+      { label: "Manager Email", field: "manager_email", sortable: true, filterable: true },
       { label: "Action", field: "action", sortable: false, interpolate: true }
-
-
     ],
 
     stores: [
@@ -344,7 +368,9 @@ export default {
         store_name: "Loading...",
         address: "Loading...",
         location: "Loading...",
-        email: "Loading..."
+        email: "Loading...",
+        manager_name: "Loading...",
+        manager_email: "Loading..."
       }
     ],
     new_store: {
@@ -354,7 +380,9 @@ export default {
       branch_id: "",
       location: "",
       email: "",
-      store_code: ""
+      store_code: "",
+      manager_name: "",
+      manager_email: ""
     },
     edit_store: {
       id: "",
@@ -363,7 +391,9 @@ export default {
       branch_id: "",
       location: "",
       email: "",
-      store_code: ""
+      store_code: "",
+      manager_name: "",
+      manager_email: ""
     }
   }),
 
@@ -382,6 +412,7 @@ export default {
         .then(response => {
           if (response.type == req.what) {
             this.stores = response.data.data;
+            // console.log(response.data.data);
           }
         })
         .catch(error => {
@@ -398,7 +429,6 @@ export default {
         this.new_store.store_code = "PJ";
       }
 
-
       var cf = {
         what: "store",
         data: this.new_store
@@ -409,28 +439,45 @@ export default {
         .then(response => {
           if (response.type == "store") {
             this.getStores();
-            this.$toast.success('New store created successfully', {
+            this.$toast.success("New store created successfully", {
               // optional options Object
-            })
+            });
+            this.new_store.id = "";
+            this.new_store.store_name = "";
+            this.new_store.address = "";
+            this.new_store.branch_id = "";
+            this.new_store.location = "";
+            this.new_store.email = "";
+            this.new_store.store_code = "";
+            this.new_store.manager_name = "";
+            this.new_store.manager_email = "";
           }
         })
         .catch(error => {
           console.log(error);
-          this.$toast.error('Error creating new store, Please Try Again', {
+          this.$toast.error("Error creating new store, Please Try Again", {
             // optional options Object
-          })
+          });
         });
     },
     getOutlet: function (code) {
       let outlet;
       if (code == "KJ") {
         outlet = "Kilimanjaro";
+        document.getElementById("mks").classList.remove("active");
+        document.getElementById("pj").classList.remove("active");
+        document.getElementById("kj").classList.add("active");
       } else if (code == "PJ") {
         outlet = "Pizza Jungle";
+        document.getElementById("mks").classList.remove("active");
+        document.getElementById("kj").classList.remove("active");
+        document.getElementById("pj").classList.add("active");
       } else if (code == "MKS") {
         outlet = "Marketsquare";
+        document.getElementById("mks").classList.remove("active");
+        document.getElementById("kj").classList.remove("active");
+        document.getElementById("mks").classList.add("active");
       }
-
 
       var req = {
         what: "stores",
@@ -441,7 +488,6 @@ export default {
         .makeRequest("GET", req)
         .then(response => {
           if (response.type == req.what) {
-
             this.stores = response.data.data;
           }
         })
@@ -458,8 +504,6 @@ export default {
         this.edit_store.store_code = "PJ";
       }
 
-
-
       var es = {
         what: "update",
         id: id,
@@ -470,16 +514,16 @@ export default {
         .then(response => {
           if (response.type == "update") {
             this.getStores();
-            this.$toast.success('Store Updated Successfully', {
+            this.$toast.success("Store Updated Successfully", {
               // optional options Object
-            })
+            });
           }
         })
         .catch(error => {
           console.log(error);
-          this.$toast.error('Update Error!!! Please Try Again', {
+          this.$toast.error("Update Error!!! Please Try Again", {
             // optional options Object
-          })
+          });
         });
     },
     getStoreByID: function (id, vm = this) {
@@ -492,9 +536,6 @@ export default {
       this.edit_store = vm.edit_store;
     },
     deleteStore: function (id) {
-
-
-
       var cf = {
         what: "delete",
         data: id
@@ -504,7 +545,7 @@ export default {
         .makeRequest("DELETE", cf)
         .then(response => {
           if (response.type == "delete") {
-            this.$toast.success('Store Deleted Successfully', {
+            this.$toast.success("Store Deleted Successfully", {
               // optional options Object
             });
             window.location.reload();
@@ -512,7 +553,7 @@ export default {
         })
         .catch(error => {
           console.log(error);
-          this.$toast.error('Error!!!, Please Try Again', {
+          this.$toast.error("Error!!!, Please Try Again", {
             // optional options Object
           });
         });
@@ -600,5 +641,10 @@ table td {
   box-shadow: 0 4px 5px 0 rgba(156, 39, 176, 0.14),
     0 1px 10px 0 rgba(156, 39, 176, 0.12),
     0 2px 4px -1px rgba(156, 39, 176, 0.2) !important;
+}
+.store-tab:hover,
+.store-tab:focus,
+.store-tab.active {
+  background: grey !important;
 }
 </style>
