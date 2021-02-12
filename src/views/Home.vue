@@ -185,6 +185,25 @@ create store -->
                   v-model="new_store.location"
                 />
               </md-field>
+              <md-field>
+                <select
+                  class="md-input"
+                  v-model="new_store.region"
+                  required="required"
+                >
+                  <option
+                    value=""
+                    hidden
+                    selected
+                  >Select Region</option>
+                  <option>PH</option>
+                  <option>North-Region</option>
+                  <option>South-South</option>
+                  <option>South-East-1</option>
+                  <option>South-East-2</option>
+                  <option>South-West</option>
+                </select>
+              </md-field>
 
               <md-field>
                 <label for="email">Store Email</label>
@@ -298,7 +317,21 @@ create store -->
                   value="edit_store.location"
                 />
               </md-field>
-
+              <md-field>
+                <select
+                  class="md-input"
+                  v-model="edit_store.region"
+                  required="required"
+                  value="edit_store.region"
+                >
+                  <option>PH</option>
+                  <option>North-Region</option>
+                  <option>South-South</option>
+                  <option>South-East-1</option>
+                  <option>South-East-2</option>
+                  <option>South-West</option>
+                </select>
+              </md-field>
               <md-field>
                 <label for="email">Email</label>
                 <md-input
@@ -379,6 +412,7 @@ export default {
       address: "",
       branch_id: "",
       location: "",
+      region: "",
       email: "",
       store_code: "",
       manager_name: "",
@@ -390,6 +424,7 @@ export default {
       address: "",
       branch_id: "",
       location: "",
+      region: "",
       email: "",
       store_code: "",
       manager_name: "",
@@ -412,7 +447,6 @@ export default {
         .then(response => {
           if (response.type == req.what) {
             this.stores = response.data.data;
-            // console.log(response.data.data);
           }
         })
         .catch(error => {
@@ -447,6 +481,7 @@ export default {
             this.new_store.address = "";
             this.new_store.branch_id = "";
             this.new_store.location = "";
+            this.new_store.region = "";
             this.new_store.email = "";
             this.new_store.store_code = "";
             this.new_store.manager_name = "";
@@ -454,7 +489,6 @@ export default {
           }
         })
         .catch(error => {
-          console.log(error);
           this.$toast.error("Error creating new store, Please Try Again", {
             // optional options Object
           });
@@ -492,7 +526,6 @@ export default {
           }
         })
         .catch(error => {
-          console.log(error);
         });
     },
     editStore: function (id) {
@@ -520,7 +553,6 @@ export default {
           }
         })
         .catch(error => {
-          console.log(error);
           this.$toast.error("Update Error!!! Please Try Again", {
             // optional options Object
           });
@@ -552,7 +584,6 @@ export default {
           }
         })
         .catch(error => {
-          console.log(error);
           this.$toast.error("Error!!!, Please Try Again", {
             // optional options Object
           });
